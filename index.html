@@ -1,32 +1,54 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mi Organizador Personal</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Organizador Personal</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-  <header>
-    <h1>Mi Organizador Personal</h1>
-  </header>
+    <div class="container">
+        <nav class="sidebar">
+            <h2>Organizador</h2>
+            <ul>
+                <li onclick="mostrarSeccion('dashboard')"><i class="fas fa-home"></i> Inicio</li>
+                <li onclick="mostrarSeccion('manualidades')"><i class="fas fa-cut"></i> Manualidades</li>
+                <li onclick="mostrarSeccion('configuracion')"><i class="fas fa-cog"></i> Respaldo</li>
+            </ul>
+        </nav>
 
-  <main>
-    <section id="manualidades">
-      <h2>Gestor de Manualidades</h2>
-      <div class="formulario">
-        <input type="text" id="nombre-proyecto" placeholder="Nombre de la manualidad">
-        <textarea id="info-proyecto" placeholder="Descripción o pasos del proyecto"></textarea>
-        <input type="text" id="materiales-proyecto" placeholder="Materiales necesarios (ej: Tijeras, pegamento...)">
-        <button onclick="agregarManualidad()">Guardar en mi lista</button>
-      </div>
+        <main class="content">
+            <section id="dashboard" class="seccion-activa">
+                <h1>Bienvenida</h1>
+                <p>Selecciona una opción en el menú para comenzar.</p>
+            </section>
 
-      <div id="contenedor-proyectos">
-        </div>
-    </section>
-  </main>
+            <section id="manualidades" style="display:none;">
+                <h1>Mis Proyectos de Manualidades</h1>
+                <div class="card-form">
+                    <input type="text" id="nom-proy" placeholder="¿Cómo se llama el proyecto?">
+                    <textarea id="desc-proy" placeholder="¿De qué trata?"></textarea>
+                    <input type="text" id="mat-proy" placeholder="Materiales necesarios...">
+                    <button class="btn-main" onclick="guardarManualidad()">+ Guardar Proyecto</button>
+                </div>
+                <div id="lista-manualidades" class="grid-proyectos"></div>
+            </section>
 
-  <script src="script.js"></script>
+            <section id="configuracion" style="display:none;">
+                <h1>Gestión de Datos</h1>
+                <p>Desde aquí puedes descargar tu información o subir un respaldo anterior.</p>
+                <div class="card-form">
+                    <button class="btn-sec" onclick="exportarJSON()"><i class="fas fa-download"></i> Descargar Respaldo</button>
+                    <br><br>
+                    <input type="file" id="import-file" style="display:none" onchange="importarJSON(event)">
+                    <button class="btn-sec" onclick="document.getElementById('import-file').click()"><i class="fas fa-upload"></i> Subir Respaldo</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
