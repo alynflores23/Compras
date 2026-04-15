@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Organizador Personal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Mi Organizador Personal</h1>
+  </header>
+
+  <main>
+    <section id="manualidades">
+      <h2>Gestor de Manualidades</h2>
+      <div class="formulario">
+        <input type="text" id="nombre-proyecto" placeholder="Nombre de la manualidad">
+        <textarea id="info-proyecto" placeholder="Descripción o pasos del proyecto"></textarea>
+        <input type="text" id="materiales-proyecto" placeholder="Materiales necesarios (ej: Tijeras, pegamento...)">
+        <button onclick="agregarManualidad()">Guardar en mi lista</button>
+      </div>
+
+      <div id="contenedor-proyectos">
+        </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
