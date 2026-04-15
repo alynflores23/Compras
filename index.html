@@ -3,183 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Organizador Personal</title>
+    <title>Mi Organizador Total</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
     <style>
+        :root { --primary: #4ecca3; --dark: #1e1e2f; --light: #f4f6f9; --text: #333; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #f0f2f5; display: flex; min-height: 100vh; }
+        body { background-color: var(--light); display: flex; min-height: 100vh; color: var(--text); }
 
-        /* MENÚ LATERAL */
-        .sidebar { width: 250px; background-color: #1a1a2e; color: white; padding: 30px 20px; height: 100vh; position: fixed; }
-        .sidebar h2 { color: #4ecca3; margin-bottom: 30px; text-align: center; }
-        .sidebar ul { list-style: none; }
-        .sidebar li { padding: 15px; cursor: pointer; border-radius: 8px; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
-        .sidebar li:hover { background-color: #16213e; color: #4ecca3; }
+        /* SIDEBAR */
+        .sidebar { width: 260px; background-color: var(--dark); color: white; padding: 30px 20px; height: 100vh; position: fixed; }
+        .sidebar h2 { color: var(--primary); margin-bottom: 40px; text-align: center; }
+        .sidebar li { padding: 15px; cursor: pointer; border-radius: 10px; transition: 0.3s; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; list-style: none; }
+        .sidebar li:hover, .active-menu { background-color: #2d2d44; color: var(--primary); }
 
         /* CONTENIDO */
-        .content { margin-left: 250px; padding: 40px; width: 100%; }
+        .content { margin-left: 260px; padding: 40px; width: calc(100% - 260px); }
         .seccion { display: none; }
-        .seccion-activa { display: block; }
+        .seccion-activa { display: block; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* FORMULARIOS */
-        .card-form { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; flex-direction: column; gap: 15px; max-width: 600px; }
-        input, textarea, select { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; }
-        .btn-main { background: #4ecca3; color: #1a1a2e; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-main:hover { background: #45b291; }
+        /* CARDS Y FORMULARIOS */
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        input, select, textarea { padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%; }
+        .full { grid-column: span 2; }
+        button { background: var(--primary); border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        /* DISEÑO DE CATEGORÍAS */
-        .categoria-bloque { background: #fff; margin-bottom: 20px; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .categoria-header { background: #1a1a2e; color: #4ecca3; padding: 15px 20px; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; }
-        
-        .subcategoria-bloque { padding: 10px 20px; border-bottom: 1px solid #eee; }
-        .subcategoria-titulo { color: #4f46e5; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+        /* COMPRAS */
+        .lista-compras { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .item-compra { border-left: 5px solid var(--primary); padding: 15px; background: white; border-radius: 8px; position: relative; }
+        .tag { font-size: 0.7rem; background: #eee; padding: 2px 6px; border-radius: 4px; }
 
-        .grid-proyectos { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; padding: 10px 0; }
-        .card-proy { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; position: relative; }
-        .card-proy h4 { color: #1e293b; margin-bottom: 5px; }
-        .card-proy p { font-size: 0.9rem; color: #64748b; margin-bottom: 5px; }
-        .btn-del { color: #ef4444; border: none; background: none; cursor: pointer; font-size: 0.8rem; margin-top: 10px; }
+        /* PROYECTOS */
+        .img-preview { width: 100%; max-height: 150px; object-fit: cover; border-radius: 8px; margin-top: 10px; }
+        .archivo-link { display: block; font-size: 0.8rem; color: #6366f1; margin-top: 5px; }
     </style>
 </head>
 <body>
 
     <nav class="sidebar">
-        <h2>Organizador</h2>
+        <h2>MI MUNDO</h2>
         <ul>
-            <li onclick="mostrarSeccion('dashboard')"><i class="fas fa-home"></i> Inicio</li>
-            <li onclick="mostrarSeccion('manualidades')"><i class="fas fa-cut"></i> Manualidades</li>
-            <li onclick="mostrarSeccion('configuracion')"><i class="fas fa-cog"></i> Respaldo</li>
+            <li onclick="mostrar('dash')"><i class="fas fa-home"></i> Inicio</li>
+            <li onclick="mostrar('compras')"><i class="fas fa-shopping-cart"></i> Lista de Compras</li>
+            <li onclick="mostrar('proyectos')"><i class="fas fa-cut"></i> Manualidades</li>
+            <li onclick="exportar()"><i class="fas fa-download"></i> Respaldar</li>
         </ul>
     </nav>
 
     <main class="content">
-        <section id="dashboard" class="seccion seccion-activa">
-            <h1>Bienvenida</h1>
-            <p>Gestiona tus proyectos y materiales de forma jerárquica.</p>
+        <section id="dash" class="seccion seccion-activa">
+            <h1>Bienvenida de nuevo</h1>
+            <p>Aquí verás un resumen pronto. Por ahora, usa el menú lateral.</p>
         </section>
 
-        <section id="manualidades" class="seccion">
-            <h1>Mis Manualidades</h1>
-            
-            <div class="card-form">
-                <h3>+ Nuevo Proyecto</h3>
-                <input type="text" id="cat-nom" placeholder="Categoría (ej: Tejido, Pintura...)">
-                <input type="text" id="sub-nom" placeholder="Subcategoría (ej: Amigurumi, Óleo...)">
-                <input type="text" id="proy-nom" placeholder="Nombre del proyecto específico">
-                <textarea id="proy-desc" placeholder="Descripción del proyecto"></textarea>
-                <input type="text" id="proy-mat" placeholder="Materiales (separados por comas)">
-                <button class="btn-main" onclick="guardarManualidad()">Guardar en Organizador</button>
-            </div>
-
-            <div id="lista-categorias">
+        <section id="compras" class="seccion">
+            <h1>Lista de Compras</h1>
+            <div class="card">
+                <div class="form-grid">
+                    <select id="comp-tipo" onchange="actualizarSubcats()">
+                        <option value="Quiero">Lo quiero</option>
+                        <option value="Util">Me es útil</option>
+                        <option value="Necesito">Lo necesito</option>
+                        <option value="Regalo">Para regalar</option>
+                    </select>
+                    <select id="comp-sub"></select>
+                    <input type="text" id="comp-nom" placeholder="¿Qué es?" class="full">
+                    <input type="url" id="comp-link" placeholder="Link del producto" class="full">
+                    <button class="full" onclick="guardarCompra()">Agregar a la lista</button>
                 </div>
+            </div>
+            <div id="display-compras" class="lista-compras"></div>
         </section>
 
-        <section id="configuracion" class="seccion">
-            <h1>Respaldo</h1>
-            <div class="card-form">
-                <button class="btn-main" onclick="exportarJSON()"><i class="fas fa-download"></i> Descargar Datos</button>
+        <section id="proyectos" class="seccion">
+            <h1>Mis Proyectos</h1>
+            <div class="card">
+                <div class="form-grid">
+                    <input type="text" id="pro-nom" placeholder="Nombre del proyecto" class="full">
+                    <textarea id="pro-desc" placeholder="Descripción y pasos..." class="full"></textarea>
+                    <input type="url" id="pro-yt" placeholder="Link a video/tutorial" class="full">
+                    <div>
+                        <label>Subir Foto:</label>
+                        <input type="file" id="pro-foto" accept="image/*">
+                    </div>
+                    <div>
+                        <label>Subir Archivo (PDF/Doc):</label>
+                        <input type="file" id="pro-doc">
+                    </div>
+                    <button class="full" onclick="guardarProyecto()">Crear Proyecto</button>
+                </div>
             </div>
+            <div id="display-proyectos" class="lista-compras"></div>
         </section>
     </main>
 
     <script>
-        function mostrarSeccion(id) {
+        const subGenerales = ["Ropa", "Decoración", "Manualidades", "Accesorios", "Hogar", "Otros"];
+        const subRegalos = ["Mamá", "Papá", "Diego", "JB", "Clod", "Gertru", "Otro"];
+
+        function actualizarSubcats() {
+            const tipo = document.getElementById('comp-tipo').value;
+            const subSelect = document.getElementById('comp-sub');
+            const opciones = (tipo === "Regalo") ? subRegalos : subGenerales;
+            subSelect.innerHTML = opciones.map(o => `<option value="${o}">${o}</option>`).join('');
+        }
+
+        function mostrar(id) {
             document.querySelectorAll('.seccion').forEach(s => s.classList.remove('seccion-activa'));
             document.getElementById(id).classList.add('seccion-activa');
         }
 
-        function guardarManualidad() {
-            const cat = document.getElementById('cat-nom').value.trim() || "Sin Categoría";
-            const sub = document.getElementById('sub-nom').value.trim() || "General";
-            const nombre = document.getElementById('proy-nom').value.trim();
-            const desc = document.getElementById('proy-desc').value.trim();
-            const mat = document.getElementById('proy-mat').value.trim();
-
-            if(!nombre) return alert("El nombre del proyecto es obligatorio");
-
-            const nuevoProyecto = {
+        // --- LÓGICA DE COMPRAS ---
+        function guardarCompra() {
+            const item = {
                 id: Date.now(),
-                categoria: cat,
-                subcategoria: sub,
-                nombre: nombre,
-                descripcion: desc,
-                materiales: mat
+                tipo: document.getElementById('comp-tipo').value,
+                sub: document.getElementById('comp-sub').value,
+                nom: document.getElementById('comp-nom').value,
+                link: document.getElementById('comp-link').value
+            };
+            if(!item.nom) return alert("Ponle un nombre");
+            let lista = JSON.parse(localStorage.getItem('compras')) || [];
+            lista.push(item);
+            localStorage.setItem('compras', JSON.stringify(lista));
+            renderCompras();
+        }
+
+        function renderCompras() {
+            const cont = document.getElementById('display-compras');
+            const lista = JSON.parse(localStorage.getItem('compras')) || [];
+            cont.innerHTML = lista.map(i => `
+                <div class="item-compra">
+                    <span class="tag">${i.tipo} > ${i.sub}</span>
+                    <h3>${i.nom}</h3>
+                    ${i.link ? `<a href="${i.link}" target="_blank">Ver link</a>` : ''}
+                    <button onclick="borrarItem('compras', ${i.id})" style="background:none; color:red; float:right">✖</button>
+                </div>
+            `).join('');
+        }
+
+        // --- LÓGICA DE PROYECTOS (CON ARCHIVOS) ---
+        async function guardarProyecto() {
+            const fotoFile = document.getElementById('pro-foto').files[0];
+            const docFile = document.getElementById('pro-doc').files[0];
+
+            const proyecto = {
+                id: Date.now(),
+                nom: document.getElementById('pro-nom').value,
+                desc: document.getElementById('pro-desc').value,
+                yt: document.getElementById('pro-yt').value,
+                foto: fotoFile ? await toBase64(fotoFile) : null,
+                doc: docFile ? await toBase64(docFile) : null,
+                docName: docFile ? docFile.name : null
             };
 
-            let datos = JSON.parse(localStorage.getItem('organizador_v2')) || [];
-            datos.push(nuevoProyecto);
-            localStorage.setItem('organizador_v2', JSON.stringify(datos));
-
-            // Limpiar campos
-            document.getElementById('proy-nom').value = "";
-            document.getElementById('proy-desc').value = "";
-            document.getElementById('proy-mat').value = "";
-            
-            renderizar();
+            let lista = JSON.parse(localStorage.getItem('proyectos')) || [];
+            lista.push(proyecto);
+            localStorage.setItem('proyectos', JSON.stringify(lista));
+            renderProyectos();
         }
 
-        function renderizar() {
-            const contenedor = document.getElementById('lista-categorias');
-            const datos = JSON.parse(localStorage.getItem('organizador_v2')) || [];
-            contenedor.innerHTML = "";
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
 
-            // Agrupar por categoría
-            const categorias = [...new Set(datos.map(d => d.categoria))];
-
-            categorias.forEach(cat => {
-                let catHTML = `
-                <div class="categoria-bloque">
-                    <div class="categoria-header">${cat} <i class="fas fa-chevron-down"></i></div>
-                    <div class="categoria-cuerpo">`;
-
-                const subcats = [...new Set(datos.filter(d => d.categoria === cat).map(d => d.subcategoria))];
-
-                subcats.forEach(sub => {
-                    catHTML += `
-                    <div class="subcategoria-bloque">
-                        <div class="subcategoria-titulo"><i class="fas fa-folder-open"></i> ${sub}</div>
-                        <div class="grid-proyectos">`;
-
-                    const proyectos = datos.filter(d => d.categoria === cat && d.subcategoria === sub);
-                    
-                    proyectos.forEach(p => {
-                        catHTML += `
-                        <div class="card-proy">
-                            <h4>${p.nombre}</h4>
-                            <p><strong>Info:</strong> ${p.descripcion}</p>
-                            <p><strong>Materiales:</strong> ${p.materiales}</p>
-                            <button class="btn-del" onclick="borrar(${p.id})">Eliminar</button>
-                        </div>`;
-                    });
-
-                    catHTML += `</div></div>`;
-                });
-
-                catHTML += `</div></div>`;
-                contenedor.innerHTML += catHTML;
-            });
+        function renderProyectos() {
+            const cont = document.getElementById('display-proyectos');
+            const lista = JSON.parse(localStorage.getItem('proyectos')) || [];
+            cont.innerHTML = lista.map(p => `
+                <div class="card">
+                    <h3>${p.nom}</h3>
+                    <p>${p.desc}</p>
+                    ${p.yt ? `<a href="${p.yt}" target="_blank">📺 Video Tutorial</a>` : ''}
+                    ${p.foto ? `<img src="${p.foto}" class="img-preview">` : ''}
+                    ${p.doc ? `<a href="${p.doc}" download="${p.docName}" class="archivo-link">📄 Descargar: ${p.docName}</a>` : ''}
+                    <button onclick="borrarItem('proyectos', ${p.id})" style="margin-top:10px; background:#ffcfcf">Eliminar</button>
+                </div>
+            `).join('');
         }
 
-        function borrar(id) {
-            let datos = JSON.parse(localStorage.getItem('organizador_v2')) || [];
-            datos = datos.filter(d => d.id !== id);
-            localStorage.setItem('organizador_v2', JSON.stringify(datos));
-            renderizar();
+        function borrarItem(key, id) {
+            let lista = JSON.parse(localStorage.getItem(key));
+            lista = lista.filter(i => i.id !== id);
+            localStorage.setItem(key, JSON.stringify(lista));
+            key === 'compras' ? renderCompras() : renderProyectos();
         }
 
-        function exportarJSON() {
-            const data = localStorage.getItem('organizador_v2');
-            const blob = new Blob([data], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
+        function exportar() {
+            const data = { compras: localStorage.getItem('compras'), proyectos: localStorage.getItem('proyectos') };
+            const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
             const a = document.createElement('a');
-            a.href = url;
-            a.download = 'mi_respaldo_organizador.json';
+            a.href = URL.createObjectURL(blob);
+            a.download = 'mi_respaldo_total.json';
             a.click();
         }
 
-        window.onload = renderizar;
+        window.onload = () => {
+            actualizarSubcats();
+            renderCompras();
+            renderProyectos();
+        };
     </script>
 </body>
 </html>
