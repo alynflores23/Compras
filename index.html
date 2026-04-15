@@ -1,55 +1,160 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Organizador Personal</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* ESTILOS DIRECTOS AQUÍ PARA QUE NO FALLE */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
+        body { background-color: #f0f2f5; display: flex; min-height: 100vh; }
+
+        /* MENÚ LATERAL */
+        .sidebar {
+            width: 250px;
+            background-color: #1a1a2e;
+            color: white;
+            padding: 30px 20px;
+            height: 100vh;
+            position: fixed;
+        }
+
+        .sidebar h2 { color: #4ecca3; margin-bottom: 30px; text-align: center; }
+
+        .sidebar ul { list-style: none; }
+
+        .sidebar li {
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar li:hover { background-color: #16213e; color: #4ecca3; }
+
+        /* CONTENIDO */
+        .content { margin-left: 250px; padding: 40px; width: 100%; }
+
+        .seccion { display: none; }
+        .seccion-activa { display: block; }
+
+        .card-form {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input, textarea { padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
+
+        .btn-main { background: #4ecca3; color: #1a1a2e; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        .grid-proyectos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
+
+        .card-proy { background: white; padding: 20px; border-radius: 12px; border-left: 5px solid #4ecca3; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    </style>
 </head>
 <body>
 
-    <div class="container">
-        <nav class="sidebar">
-            <h2>Organizador</h2>
-            <ul>
-                <li onclick="mostrarSeccion('dashboard')"><i class="fas fa-home"></i> Inicio</li>
-                <li onclick="mostrarSeccion('manualidades')"><i class="fas fa-cut"></i> Manualidades</li>
-                <li onclick="mostrarSeccion('configuracion')"><i class="fas fa-cog"></i> Respaldo</li>
-            </ul>
-        </nav>
+    <nav class="sidebar">
+        <h2>Organizador</h2>
+        <ul>
+            <li onclick="mostrarSeccion('dashboard')"><i class="fas fa-home"></i> Inicio</li>
+            <li onclick="mostrarSeccion('manualidades')"><i class="fas fa-cut"></i> Manualidades</li>
+            <li onclick="mostrarSeccion('configuracion')"><i class="fas fa-cog"></i> Respaldo</li>
+        </ul>
+    </nav>
 
-        <main class="content">
-            <section id="dashboard" class="seccion-activa">
-                <h1>Bienvenida</h1>
-                <p>Selecciona una opción en el menú para comenzar.</p>
-            </section>
+    <main class="content">
+        <section id="dashboard" class="seccion seccion-activa">
+            <h1>Bienvenida</h1>
+            <p>Selecciona una opción en el menú para comenzar.</p>
+        </section>
 
-            <section id="manualidades" style="display:none;">
-                <h1>Mis Proyectos de Manualidades</h1>
-                <div class="card-form">
-                    <input type="text" id="nom-proy" placeholder="¿Cómo se llama el proyecto?">
-                    <textarea id="desc-proy" placeholder="¿De qué trata?"></textarea>
-                    <input type="text" id="mat-proy" placeholder="Materiales necesarios...">
-                    <button class="btn-main" onclick="guardarManualidad()">+ Guardar Proyecto</button>
+        <section id="manualidades" class="seccion">
+            <h1>Mis Manualidades</h1>
+            <div class="card-form">
+                <input type="text" id="nom-proy" placeholder="Nombre del proyecto">
+                <textarea id="desc-proy" placeholder="Descripción"></textarea>
+                <input type="text" id="mat-proy" placeholder="Materiales">
+                <button class="btn-main" onclick="guardarManualidad()">Guardar</button>
+            </div>
+            <div id="lista-manualidades" class="grid-proyectos"></div>
+        </section>
+
+        <section id="configuracion" class="seccion">
+            <h1>Respaldo</h1>
+            <button class="btn-main" onclick="exportarJSON()">Descargar Datos</button>
+        </section>
+    </main>
+
+    <script>
+        // LÓGICA DE NAVEGACIÓN
+        function mostrarSeccion(id) {
+            document.querySelectorAll('.seccion').forEach(s => s.classList.remove('seccion-activa'));
+            document.getElementById(id).classList.add('seccion-activa');
+        }
+
+        // LÓGICA DE DATOS
+        function guardarManualidad() {
+            const nombre = document.getElementById('nom-proy').value;
+            const desc = document.getElementById('desc-proy').value;
+            const mat = document.getElementById('mat-proy').value;
+
+            if(!nombre) return alert("Escribe un nombre");
+
+            const nuevo = { id: Date.now(), nombre, desc, mat };
+            let lista = JSON.parse(localStorage.getItem('datos_manualidades')) || [];
+            lista.push(nuevo);
+            localStorage.setItem('datos_manualidades', JSON.stringify(lista));
+
+            document.getElementById('nom-proy').value = "";
+            document.getElementById('desc-proy').value = "";
+            document.getElementById('mat-proy').value = "";
+            renderizar();
+        }
+
+        function renderizar() {
+            const contenedor = document.getElementById('lista-manualidades');
+            const lista = JSON.parse(localStorage.getItem('datos_manualidades')) || [];
+            contenedor.innerHTML = lista.map(p => `
+                <div class="card-proy">
+                    <h3>${p.nombre}</h3>
+                    <p><strong>Info:</strong> ${p.desc}</p>
+                    <p><strong>Materiales:</strong> ${p.mat}</p>
+                    <button onclick="borrar(${p.id})" style="color:red; border:none; background:none; cursor:pointer; margin-top:10px;">Eliminar</button>
                 </div>
-                <div id="lista-manualidades" class="grid-proyectos"></div>
-            </section>
+            `).join('');
+        }
 
-            <section id="configuracion" style="display:none;">
-                <h1>Gestión de Datos</h1>
-                <p>Desde aquí puedes descargar tu información o subir un respaldo anterior.</p>
-                <div class="card-form">
-                    <button class="btn-sec" onclick="exportarJSON()"><i class="fas fa-download"></i> Descargar Respaldo</button>
-                    <br><br>
-                    <input type="file" id="import-file" style="display:none" onchange="importarJSON(event)">
-                    <button class="btn-sec" onclick="document.getElementById('import-file').click()"><i class="fas fa-upload"></i> Subir Respaldo</button>
-                </div>
-            </section>
-        </main>
-    </div>
+        function borrar(id) {
+            let lista = JSON.parse(localStorage.getItem('datos_manualidades')) || [];
+            lista = lista.filter(p => p.id !== id);
+            localStorage.setItem('datos_manualidades', JSON.stringify(lista));
+            renderizar();
+        }
 
-    <script src="script.js"></script>
+        function exportarJSON() {
+            const data = localStorage.getItem('datos_manualidades');
+            const blob = new Blob([data], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'respaldo.json';
+            a.click();
+        }
+
+        window.onload = renderizar;
+    </script>
 </body>
 </html>
