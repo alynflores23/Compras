@@ -7,61 +7,39 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* ESTILOS DIRECTOS AQUÍ PARA QUE NO FALLE */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        
         body { background-color: #f0f2f5; display: flex; min-height: 100vh; }
 
         /* MENÚ LATERAL */
-        .sidebar {
-            width: 250px;
-            background-color: #1a1a2e;
-            color: white;
-            padding: 30px 20px;
-            height: 100vh;
-            position: fixed;
-        }
-
+        .sidebar { width: 250px; background-color: #1a1a2e; color: white; padding: 30px 20px; height: 100vh; position: fixed; }
         .sidebar h2 { color: #4ecca3; margin-bottom: 30px; text-align: center; }
-
         .sidebar ul { list-style: none; }
-
-        .sidebar li {
-            padding: 15px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .sidebar li { padding: 15px; cursor: pointer; border-radius: 8px; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
         .sidebar li:hover { background-color: #16213e; color: #4ecca3; }
 
         /* CONTENIDO */
         .content { margin-left: 250px; padding: 40px; width: 100%; }
-
         .seccion { display: none; }
         .seccion-activa { display: block; }
 
-        .card-form {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+        /* FORMULARIOS */
+        .card-form { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; flex-direction: column; gap: 15px; max-width: 600px; }
+        input, textarea, select { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; }
+        .btn-main { background: #4ecca3; color: #1a1a2e; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-main:hover { background: #45b291; }
 
-        input, textarea { padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
+        /* DISEÑO DE CATEGORÍAS */
+        .categoria-bloque { background: #fff; margin-bottom: 20px; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .categoria-header { background: #1a1a2e; color: #4ecca3; padding: 15px 20px; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; }
+        
+        .subcategoria-bloque { padding: 10px 20px; border-bottom: 1px solid #eee; }
+        .subcategoria-titulo { color: #4f46e5; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
 
-        .btn-main { background: #4ecca3; color: #1a1a2e; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-
-        .grid-proyectos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
-
-        .card-proy { background: white; padding: 20px; border-radius: 12px; border-left: 5px solid #4ecca3; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .grid-proyectos { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; padding: 10px 0; }
+        .card-proy { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; position: relative; }
+        .card-proy h4 { color: #1e293b; margin-bottom: 5px; }
+        .card-proy p { font-size: 0.9rem; color: #64748b; margin-bottom: 5px; }
+        .btn-del { color: #ef4444; border: none; background: none; cursor: pointer; font-size: 0.8rem; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -78,79 +56,126 @@
     <main class="content">
         <section id="dashboard" class="seccion seccion-activa">
             <h1>Bienvenida</h1>
-            <p>Selecciona una opción en el menú para comenzar.</p>
+            <p>Gestiona tus proyectos y materiales de forma jerárquica.</p>
         </section>
 
         <section id="manualidades" class="seccion">
             <h1>Mis Manualidades</h1>
+            
             <div class="card-form">
-                <input type="text" id="nom-proy" placeholder="Nombre del proyecto">
-                <textarea id="desc-proy" placeholder="Descripción"></textarea>
-                <input type="text" id="mat-proy" placeholder="Materiales">
-                <button class="btn-main" onclick="guardarManualidad()">Guardar</button>
+                <h3>+ Nuevo Proyecto</h3>
+                <input type="text" id="cat-nom" placeholder="Categoría (ej: Tejido, Pintura...)">
+                <input type="text" id="sub-nom" placeholder="Subcategoría (ej: Amigurumi, Óleo...)">
+                <input type="text" id="proy-nom" placeholder="Nombre del proyecto específico">
+                <textarea id="proy-desc" placeholder="Descripción del proyecto"></textarea>
+                <input type="text" id="proy-mat" placeholder="Materiales (separados por comas)">
+                <button class="btn-main" onclick="guardarManualidad()">Guardar en Organizador</button>
             </div>
-            <div id="lista-manualidades" class="grid-proyectos"></div>
+
+            <div id="lista-categorias">
+                </div>
         </section>
 
         <section id="configuracion" class="seccion">
             <h1>Respaldo</h1>
-            <button class="btn-main" onclick="exportarJSON()">Descargar Datos</button>
+            <div class="card-form">
+                <button class="btn-main" onclick="exportarJSON()"><i class="fas fa-download"></i> Descargar Datos</button>
+            </div>
         </section>
     </main>
 
     <script>
-        // LÓGICA DE NAVEGACIÓN
         function mostrarSeccion(id) {
             document.querySelectorAll('.seccion').forEach(s => s.classList.remove('seccion-activa'));
             document.getElementById(id).classList.add('seccion-activa');
         }
 
-        // LÓGICA DE DATOS
         function guardarManualidad() {
-            const nombre = document.getElementById('nom-proy').value;
-            const desc = document.getElementById('desc-proy').value;
-            const mat = document.getElementById('mat-proy').value;
+            const cat = document.getElementById('cat-nom').value.trim() || "Sin Categoría";
+            const sub = document.getElementById('sub-nom').value.trim() || "General";
+            const nombre = document.getElementById('proy-nom').value.trim();
+            const desc = document.getElementById('proy-desc').value.trim();
+            const mat = document.getElementById('proy-mat').value.trim();
 
-            if(!nombre) return alert("Escribe un nombre");
+            if(!nombre) return alert("El nombre del proyecto es obligatorio");
 
-            const nuevo = { id: Date.now(), nombre, desc, mat };
-            let lista = JSON.parse(localStorage.getItem('datos_manualidades')) || [];
-            lista.push(nuevo);
-            localStorage.setItem('datos_manualidades', JSON.stringify(lista));
+            const nuevoProyecto = {
+                id: Date.now(),
+                categoria: cat,
+                subcategoria: sub,
+                nombre: nombre,
+                descripcion: desc,
+                materiales: mat
+            };
 
-            document.getElementById('nom-proy').value = "";
-            document.getElementById('desc-proy').value = "";
-            document.getElementById('mat-proy').value = "";
+            let datos = JSON.parse(localStorage.getItem('organizador_v2')) || [];
+            datos.push(nuevoProyecto);
+            localStorage.setItem('organizador_v2', JSON.stringify(datos));
+
+            // Limpiar campos
+            document.getElementById('proy-nom').value = "";
+            document.getElementById('proy-desc').value = "";
+            document.getElementById('proy-mat').value = "";
+            
             renderizar();
         }
 
         function renderizar() {
-            const contenedor = document.getElementById('lista-manualidades');
-            const lista = JSON.parse(localStorage.getItem('datos_manualidades')) || [];
-            contenedor.innerHTML = lista.map(p => `
-                <div class="card-proy">
-                    <h3>${p.nombre}</h3>
-                    <p><strong>Info:</strong> ${p.desc}</p>
-                    <p><strong>Materiales:</strong> ${p.mat}</p>
-                    <button onclick="borrar(${p.id})" style="color:red; border:none; background:none; cursor:pointer; margin-top:10px;">Eliminar</button>
-                </div>
-            `).join('');
+            const contenedor = document.getElementById('lista-categorias');
+            const datos = JSON.parse(localStorage.getItem('organizador_v2')) || [];
+            contenedor.innerHTML = "";
+
+            // Agrupar por categoría
+            const categorias = [...new Set(datos.map(d => d.categoria))];
+
+            categorias.forEach(cat => {
+                let catHTML = `
+                <div class="categoria-bloque">
+                    <div class="categoria-header">${cat} <i class="fas fa-chevron-down"></i></div>
+                    <div class="categoria-cuerpo">`;
+
+                const subcats = [...new Set(datos.filter(d => d.categoria === cat).map(d => d.subcategoria))];
+
+                subcats.forEach(sub => {
+                    catHTML += `
+                    <div class="subcategoria-bloque">
+                        <div class="subcategoria-titulo"><i class="fas fa-folder-open"></i> ${sub}</div>
+                        <div class="grid-proyectos">`;
+
+                    const proyectos = datos.filter(d => d.categoria === cat && d.subcategoria === sub);
+                    
+                    proyectos.forEach(p => {
+                        catHTML += `
+                        <div class="card-proy">
+                            <h4>${p.nombre}</h4>
+                            <p><strong>Info:</strong> ${p.descripcion}</p>
+                            <p><strong>Materiales:</strong> ${p.materiales}</p>
+                            <button class="btn-del" onclick="borrar(${p.id})">Eliminar</button>
+                        </div>`;
+                    });
+
+                    catHTML += `</div></div>`;
+                });
+
+                catHTML += `</div></div>`;
+                contenedor.innerHTML += catHTML;
+            });
         }
 
         function borrar(id) {
-            let lista = JSON.parse(localStorage.getItem('datos_manualidades')) || [];
-            lista = lista.filter(p => p.id !== id);
-            localStorage.setItem('datos_manualidades', JSON.stringify(lista));
+            let datos = JSON.parse(localStorage.getItem('organizador_v2')) || [];
+            datos = datos.filter(d => d.id !== id);
+            localStorage.setItem('organizador_v2', JSON.stringify(datos));
             renderizar();
         }
 
         function exportarJSON() {
-            const data = localStorage.getItem('datos_manualidades');
+            const data = localStorage.getItem('organizador_v2');
             const blob = new Blob([data], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'respaldo.json';
+            a.download = 'mi_respaldo_organizador.json';
             a.click();
         }
 
