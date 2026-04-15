@@ -3,210 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Organizador Total</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Mi Organizador Personal</title>
     <style>
-        :root { --primary: #4ecca3; --dark: #1e1e2f; --light: #f4f6f9; --text: #333; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: var(--light); display: flex; min-height: 100vh; color: var(--text); }
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --bg: #f9f9fb;
+            --text: #2d3436;
+        }
 
-        /* SIDEBAR */
-        .sidebar { width: 260px; background-color: var(--dark); color: white; padding: 30px 20px; height: 100vh; position: fixed; }
-        .sidebar h2 { color: var(--primary); margin-bottom: 40px; text-align: center; }
-        .sidebar li { padding: 15px; cursor: pointer; border-radius: 10px; transition: 0.3s; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; list-style: none; }
-        .sidebar li:hover, .active-menu { background-color: #2d2d44; color: var(--primary); }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        
+        /* Navegación */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 10px 20px; cursor: pointer; border: none; background: #dfe6e9; border-radius: 8px; font-weight: bold; }
+        .tab-btn.active { background: var(--primary); color: white; }
 
-        /* CONTENIDO */
-        .content { margin-left: 260px; padding: 40px; width: calc(100% - 260px); }
-        .seccion { display: none; }
-        .seccion-activa { display: block; animation: fadeIn 0.4s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
 
-        /* CARDS Y FORMULARIOS */
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        input, select, textarea { padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%; }
-        .full { grid-column: span 2; }
-        button { background: var(--primary); border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        /* Formularios */
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        input, select, button { padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #ddd; width: 100%; box-sizing: border-box; }
+        button { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background: var(--secondary); }
 
-        /* COMPRAS */
-        .lista-compras { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .item-compra { border-left: 5px solid var(--primary); padding: 15px; background: white; border-radius: 8px; position: relative; }
-        .tag { font-size: 0.7rem; background: #eee; padding: 2px 6px; border-radius: 4px; }
-
-        /* PROYECTOS */
-        .img-preview { width: 100%; max-height: 150px; object-fit: cover; border-radius: 8px; margin-top: 10px; }
-        .archivo-link { display: block; font-size: 0.8rem; color: #6366f1; margin-top: 5px; }
+        /* Listas */
+        .item-list { display: grid; gap: 10px; }
+        .item { background: #fff; padding: 15px; border-radius: 8px; border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .delete-btn { background: #ff7675; width: auto; padding: 5px 10px; }
     </style>
 </head>
 <body>
 
-    <nav class="sidebar">
-        <h2>MI MUNDO</h2>
-        <ul>
-            <li onclick="mostrar('dash')"><i class="fas fa-home"></i> Inicio</li>
-            <li onclick="mostrar('compras')"><i class="fas fa-shopping-cart"></i> Lista de Compras</li>
-            <li onclick="mostrar('proyectos')"><i class="fas fa-cut"></i> Manualidades</li>
-            <li onclick="exportar()"><i class="fas fa-download"></i> Respaldar</li>
-        </ul>
-    </nav>
+    <h1>🛍️ Mi Organizador</h1>
 
-    <main class="content">
-        <section id="dash" class="seccion seccion-activa">
-            <h1>Bienvenida de nuevo</h1>
-            <p>Aquí verás un resumen pronto. Por ahora, usa el menú lateral.</p>
-        </section>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('compras')">Compras</button>
+        <button class="tab-btn" onclick="showTab('manualidades')">Manualidades</button>
+    </div>
 
-        <section id="compras" class="seccion">
-            <h1>Lista de Compras</h1>
-            <div class="card">
-                <div class="form-grid">
-                    <select id="comp-tipo" onchange="actualizarSubcats()">
-                        <option value="Quiero">Lo quiero</option>
-                        <option value="Util">Me es útil</option>
-                        <option value="Necesito">Lo necesito</option>
-                        <option value="Regalo">Para regalar</option>
-                    </select>
-                    <select id="comp-sub"></select>
-                    <input type="text" id="comp-nom" placeholder="¿Qué es?" class="full">
-                    <input type="url" id="comp-link" placeholder="Link del producto" class="full">
-                    <button class="full" onclick="guardarCompra()">Agregar a la lista</button>
-                </div>
-            </div>
-            <div id="display-compras" class="lista-compras"></div>
-        </section>
+    <section id="compras" class="content-section active">
+        <div class="card">
+            <h3>Agregar Nuevo Link</h3>
+            <select id="mainCat" onchange="updateSubCats()">
+                <option value="Quiero">Quiero</option>
+                <option value="Util">Me es útil</option>
+                <option value="Necesito">Necesito</option>
+                <option value="Regalar">Para Regalar</option>
+            </select>
+            <select id="subCat"></select>
+            <input type="text" id="itemLink" placeholder="Pega el link aquí...">
+            <input type="text" id="itemName" placeholder="Nombre del artículo">
+            <button onclick="addItem()">Guardar en Lista</button>
+        </div>
 
-        <section id="proyectos" class="seccion">
-            <h1>Mis Proyectos</h1>
-            <div class="card">
-                <div class="form-grid">
-                    <input type="text" id="pro-nom" placeholder="Nombre del proyecto" class="full">
-                    <textarea id="pro-desc" placeholder="Descripción y pasos..." class="full"></textarea>
-                    <input type="url" id="pro-yt" placeholder="Link a video/tutorial" class="full">
-                    <div>
-                        <label>Subir Foto:</label>
-                        <input type="file" id="pro-foto" accept="image/*">
-                    </div>
-                    <div>
-                        <label>Subir Archivo (PDF/Doc):</label>
-                        <input type="file" id="pro-doc">
-                    </div>
-                    <button class="full" onclick="guardarProyecto()">Crear Proyecto</button>
-                </div>
-            </div>
-            <div id="display-proyectos" class="lista-compras"></div>
-        </section>
-    </main>
+        <div id="comprasLista" class="item-list"></div>
+    </section>
+
+    <section id="manualidades" class="content-section">
+        <div class="card">
+            <h3>Nuevo Proyecto Creativo</h3>
+            <input type="text" id="projName" placeholder="Nombre del proyecto">
+            <input type="text" id="projVideo" placeholder="Link de Video (YouTube/Vimeo)">
+            <input type="file" id="projFile">
+            <button onclick="addProject()">Crear Proyecto</button>
+        </div>
+        <div id="proyectosLista" class="item-list"></div>
+    </section>
 
     <script>
-        const subGenerales = ["Ropa", "Decoración", "Manualidades", "Accesorios", "Hogar", "Otros"];
-        const subRegalos = ["Mamá", "Papá", "Diego", "JB", "Clod", "Gertru", "Otro"];
+        // Configuración de categorías
+        const subCatsGeneral = ["Ropa", "Decoración", "Manualidades", "Accesorios", "Hogar", "Otros"];
+        const subCatsRegalo = ["Mamá", "Papá", "Diego", "JB", "Clod", "Gertru", "Otro"];
 
-        function actualizarSubcats() {
-            const tipo = document.getElementById('comp-tipo').value;
-            const subSelect = document.getElementById('comp-sub');
-            const opciones = (tipo === "Regalo") ? subRegalos : subGenerales;
-            subSelect.innerHTML = opciones.map(o => `<option value="${o}">${o}</option>`).join('');
+        function updateSubCats() {
+            const main = document.getElementById('mainCat').value;
+            const sub = document.getElementById('subCat');
+            sub.innerHTML = "";
+            const options = (main === "Regalar") ? subCatsRegalo : subCatsGeneral;
+            options.forEach(opt => {
+                let el = document.createElement('option');
+                el.value = opt; el.textContent = opt;
+                sub.appendChild(el);
+            });
         }
 
-        function mostrar(id) {
-            document.querySelectorAll('.seccion').forEach(s => s.classList.remove('seccion-activa'));
-            document.getElementById(id).classList.add('seccion-activa');
+        // Cambio de pestañas
+        function showTab(id) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.currentTarget.classList.add('active');
         }
 
-        // --- LÓGICA DE COMPRAS ---
-        function guardarCompra() {
+        // Lógica de Almacenamiento
+        let db = JSON.parse(localStorage.getItem('miOrganizador')) || { compras: [], proyectos: [] };
+
+        function addItem() {
             const item = {
                 id: Date.now(),
-                tipo: document.getElementById('comp-tipo').value,
-                sub: document.getElementById('comp-sub').value,
-                nom: document.getElementById('comp-nom').value,
-                link: document.getElementById('comp-link').value
+                main: document.getElementById('mainCat').value,
+                sub: document.getElementById('subCat').value,
+                link: document.getElementById('itemLink').value,
+                name: document.getElementById('itemName').value
             };
-            if(!item.nom) return alert("Ponle un nombre");
-            let lista = JSON.parse(localStorage.getItem('compras')) || [];
-            lista.push(item);
-            localStorage.setItem('compras', JSON.stringify(lista));
-            renderCompras();
+            if(!item.link || !item.name) return alert("Llena los campos");
+            db.compras.push(item);
+            save();
+            render();
         }
 
-        function renderCompras() {
-            const cont = document.getElementById('display-compras');
-            const lista = JSON.parse(localStorage.getItem('compras')) || [];
-            cont.innerHTML = lista.map(i => `
-                <div class="item-compra">
-                    <span class="tag">${i.tipo} > ${i.sub}</span>
-                    <h3>${i.nom}</h3>
-                    ${i.link ? `<a href="${i.link}" target="_blank">Ver link</a>` : ''}
-                    <button onclick="borrarItem('compras', ${i.id})" style="background:none; color:red; float:right">✖</button>
-                </div>
-            `).join('');
-        }
-
-        // --- LÓGICA DE PROYECTOS (CON ARCHIVOS) ---
-        async function guardarProyecto() {
-            const fotoFile = document.getElementById('pro-foto').files[0];
-            const docFile = document.getElementById('pro-doc').files[0];
-
-            const proyecto = {
+        function addProject() {
+            const proj = {
                 id: Date.now(),
-                nom: document.getElementById('pro-nom').value,
-                desc: document.getElementById('pro-desc').value,
-                yt: document.getElementById('pro-yt').value,
-                foto: fotoFile ? await toBase64(fotoFile) : null,
-                doc: docFile ? await toBase64(docFile) : null,
-                docName: docFile ? docFile.name : null
+                name: document.getElementById('projName').value,
+                video: document.getElementById('projVideo').value,
+                fileName: document.getElementById('projFile').files[0]?.name || "Sin archivo"
             };
-
-            let lista = JSON.parse(localStorage.getItem('proyectos')) || [];
-            lista.push(proyecto);
-            localStorage.setItem('proyectos', JSON.stringify(lista));
-            renderProyectos();
+            db.proyectos.push(proj);
+            save();
+            render();
         }
 
-        const toBase64 = file => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
-        });
-
-        function renderProyectos() {
-            const cont = document.getElementById('display-proyectos');
-            const lista = JSON.parse(localStorage.getItem('proyectos')) || [];
-            cont.innerHTML = lista.map(p => `
-                <div class="card">
-                    <h3>${p.nom}</h3>
-                    <p>${p.desc}</p>
-                    ${p.yt ? `<a href="${p.yt}" target="_blank">📺 Video Tutorial</a>` : ''}
-                    ${p.foto ? `<img src="${p.foto}" class="img-preview">` : ''}
-                    ${p.doc ? `<a href="${p.doc}" download="${p.docName}" class="archivo-link">📄 Descargar: ${p.docName}</a>` : ''}
-                    <button onclick="borrarItem('proyectos', ${p.id})" style="margin-top:10px; background:#ffcfcf">Eliminar</button>
-                </div>
-            `).join('');
+        function deleteItem(type, id) {
+            db[type] = db[type].filter(i => i.id !== id);
+            save();
+            render();
         }
 
-        function borrarItem(key, id) {
-            let lista = JSON.parse(localStorage.getItem(key));
-            lista = lista.filter(i => i.id !== id);
-            localStorage.setItem(key, JSON.stringify(lista));
-            key === 'compras' ? renderCompras() : renderProyectos();
+        function save() {
+            localStorage.setItem('miOrganizador', JSON.stringify(db));
         }
 
-        function exportar() {
-            const data = { compras: localStorage.getItem('compras'), proyectos: localStorage.getItem('proyectos') };
-            const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'mi_respaldo_total.json';
-            a.click();
+        function render() {
+            const compList = document.getElementById('comprasLista');
+            compList.innerHTML = "<h3>Tus Compras:</h3>";
+            db.compras.forEach(i => {
+                compList.innerHTML += `
+                    <div class="item">
+                        <div>
+                            <strong>[${i.main} - ${i.sub}]</strong> ${i.name} 
+                            <br><a href="${i.link}" target="_blank">Ver Link</a>
+                        </div>
+                        <button class="delete-btn" onclick="deleteItem('compras', ${i.id})">X</button>
+                    </div>`;
+            });
+
+            const projList = document.getElementById('proyectosLista');
+            projList.innerHTML = "<h3>Tus Proyectos:</h3>";
+            db.proyectos.forEach(p => {
+                projList.innerHTML += `
+                    <div class="item">
+                        <div>
+                            <strong>Proyecto: ${p.name}</strong><br>
+                            Video: <a href="${p.video}" target="_blank">Ver Tutorial</a><br>
+                            Archivo: 📄 ${p.fileName}
+                        </div>
+                        <button class="delete-btn" onclick="deleteItem('proyectos', ${p.id})">X</button>
+                    </div>`;
+            });
         }
 
-        window.onload = () => {
-            actualizarSubcats();
-            renderCompras();
-            renderProyectos();
-        };
+        // Inicialización
+        updateSubCats();
+        render();
     </script>
 </body>
 </html>
